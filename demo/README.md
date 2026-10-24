@@ -39,6 +39,9 @@ are red herrings, as are the decoy changes `chaos` records.
 
 All ports are bound to `127.0.0.1`: frontend 8080, catalog 8081, cart 8082,
 Prometheus 9090, Loki 3100, Postgres 5432, Redis 6379, Grafana 3000.
+If you already run Postgres or Redis locally, move the demo's ports with
+`DEMO_POSTGRES_PORT=55432 DEMO_REDIS_PORT=56379 make up`. Nothing in the demo
+connects to them from the host.
 
 ## Walkthrough
 

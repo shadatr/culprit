@@ -4,6 +4,10 @@
 
 Culprit is read-only. It queries your systems and never changes them.
 
+![Culprit investigating a bad deploy in the demo stack](docs/demo.gif)
+
+*A live run against the [demo stack](demo/README.md): a catalog deploy adds an N+1 query, the alert fires on frontend, and Culprit names the deploy in 14 seconds while ruling out a feature flag that was rolled out shortly before.*
+
 ```
 alert / CLI / UI
       │
