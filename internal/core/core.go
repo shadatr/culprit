@@ -158,6 +158,7 @@ const (
 // Report is the result of an investigation.
 type Report struct {
 	IncidentID string          `json:"incident_id"`
+	Title      string          `json:"title,omitempty"` // incident title
 	Status     string          `json:"status"`
 	Summary    string          `json:"summary"`
 	Timeline   []TimelineEntry `json:"timeline"`
