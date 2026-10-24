@@ -188,7 +188,28 @@ notifications-cron-leak, orders-retry-storm), and an external dependency with no
 metrics of its own was absent from the suspects (fx-dns-failure). These are the
 cases the LLM step is meant to resolve by reading log messages and change diffs.
 
-### Full investigation (LLM)
+### Full investigation (LLM), 2026-10-24
 
-**Not yet run.** Results will be added here, dev and held-out side by side, with
-the model name, date, runs per scenario and the exact command used.
+Model `anthropic/claude-haiku-5.5` via OpenRouter, temperature 0.1, 1 run per
+scenario, default budgets (12 steps, 3 min, 120k tokens).
+Command: `culprit eval -config <config> -scenarios eval/<set> -concurrency 4`.
+
+| Set | Completed | Top-1 service | Top-3 service | True change named | Spurious change blamed | Valid citations | Mean tokens | Mean time |
+|---|---|---|---|---|---|---|---|---|
+| Dev (10) | 10/10 | 10/10 | 10/10 | 6/6 | 0/4 | 10/10 | 19.4k | 14.0 s |
+| Held-out (8) | 8/8 | 6/8 | 7/8 | 3/4 | 0/4 | 8/8 | 26.8k | 16.4 s |
+
+On the held-out set the agent lifts top-1 accuracy from 2/8 (triage alone) to 6/8.
+Misses:
+
+- **fx-dns-failure:** the external API has no metrics of its own, and the agent
+  blamed an internal service.
+- **orders-retry-storm:** the agent blamed a payments deploy that coincided with
+  the failure. It ranked the real cause, an orders retry config with zero backoff,
+  second at 35% and described the amplification correctly.
+
+Mean top confidence was 0.85 when right and 0.80 when wrong, so confidence is not
+yet well calibrated. A single run per scenario is a small sample; repeat with
+`-runs 3` before drawing strong conclusions.
+
+An example report is in [docs/example-report.md](docs/example-report.md).

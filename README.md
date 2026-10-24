@@ -32,6 +32,19 @@ Most of the first hour of an incident goes on the same questions. What changed? 
 - **Budgets.** Every investigation has step, time and token limits.
 - **Measured.** It ships with an evaluation harness and incident scenarios with known root causes (see [EVAL.md](EVAL.md)).
 
+## Results so far
+
+On 8 held-out incident scenarios (written after tuning, never tuned against), using `claude-haiku-5.5`:
+
+| | Triage only (no LLM) | Full investigation |
+|---|---|---|
+| Root-cause service ranked first | 2/8 | **6/8** |
+| In top 3 | 6/8 | 7/8 |
+| Reports with valid evidence citations | n/a | 8/8 |
+| Mean time / tokens | ~0.1 s / 0 | 16 s / 27k |
+
+See [EVAL.md](EVAL.md) for the method, dev-set numbers and the misses, and [docs/example-report.md](docs/example-report.md) for a full report.
+
 ## Quick start
 
 ```bash
