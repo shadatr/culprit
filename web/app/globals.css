@@ -1,0 +1,222 @@
+@import "tailwindcss";
+
+/* Culprit: quiet graphite surfaces, one indigo accent, and status colours
+   kept for state only. Light is the default; dark follows the OS. */
+:root {
+  --bg: #f5f5f3;
+  --panel: #ffffff;
+  --panel-2: #f0f0ed;
+  --hover: #e9e9e5;
+  --line: rgb(16 16 20 / 0.09);
+  --line-strong: rgb(16 16 20 / 0.16);
+  --fg: #16161a;
+  --fg-2: #3a3a42;
+  --muted: #63636c;
+  --faint: #8e8e97;
+
+  --accent: #3b4bd8;
+  --accent-ink: #ffffff;
+  --accent-dim: rgb(59 75 216 / 0.1);
+  --accent-line: rgb(59 75 216 / 0.35);
+
+  --ok: #19794e;
+  --ok-dim: rgb(25 121 78 / 0.1);
+  --warn: #9a5b00;
+  --warn-dim: rgb(180 110 0 / 0.12);
+  --err: #c0262d;
+  --err-dim: rgb(192 38 45 / 0.09);
+
+  --c-1: #3b4bd8;
+  --c-2: #0f8a76;
+  --c-3: #c2531b;
+  --c-4: #8c3fb5;
+  --c-grid: rgb(16 16 20 / 0.07);
+  --c-axis: #7a7a83;
+  --c-band: rgb(16 16 20 / 0.06);
+  --c-incident: #c0262d;
+
+  --diff-add: rgb(25 121 78 / 0.12);
+  --diff-del: rgb(192 38 45 / 0.1);
+
+  --shadow: 0 1px 2px rgb(0 0 0 / 0.04), 0 1px 0 rgb(0 0 0 / 0.02);
+  --shadow-pop: 0 24px 64px -16px rgb(0 0 0 / 0.25), 0 0 0 1px rgb(16 16 20 / 0.08);
+  color-scheme: light;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #0d0e10;
+    --panel: #141518;
+    --panel-2: #1a1b1f;
+    --hover: #212227;
+    --line: rgb(255 255 255 / 0.07);
+    --line-strong: rgb(255 255 255 / 0.13);
+    --fg: #ececef;
+    --fg-2: #c0c0c8;
+    --muted: #93939d;
+    --faint: #6c6c76;
+
+    --accent: #8f9bff;
+    --accent-ink: #0d0e1a;
+    --accent-dim: rgb(143 155 255 / 0.13);
+    --accent-line: rgb(143 155 255 / 0.4);
+
+    --ok: #4ccf8e;
+    --ok-dim: rgb(76 207 142 / 0.12);
+    --warn: #f0b44c;
+    --warn-dim: rgb(240 180 76 / 0.13);
+    --err: #ff6b6f;
+    --err-dim: rgb(255 107 111 / 0.12);
+
+    --c-1: #8f9bff;
+    --c-2: #3fc7ac;
+    --c-3: #f08a50;
+    --c-4: #c88bf0;
+    --c-grid: rgb(255 255 255 / 0.06);
+    --c-axis: #7d7d87;
+    --c-band: rgb(255 255 255 / 0.06);
+    --c-incident: #ff6b6f;
+
+    --diff-add: rgb(76 207 142 / 0.12);
+    --diff-del: rgb(255 107 111 / 0.12);
+
+    --shadow: 0 0 0 1px rgb(255 255 255 / 0.02);
+    --shadow-pop: 0 24px 64px -16px rgb(0 0 0 / 0.7), 0 0 0 1px rgb(255 255 255 / 0.08);
+    color-scheme: dark;
+  }
+}
+
+@theme inline {
+  --color-bg: var(--bg);
+  --color-panel: var(--panel);
+  --color-panel-2: var(--panel-2);
+  --color-hover: var(--hover);
+  --color-line: var(--line);
+  --color-line-strong: var(--line-strong);
+  --color-fg: var(--fg);
+  --color-fg-2: var(--fg-2);
+  --color-muted: var(--muted);
+  --color-faint: var(--faint);
+  --color-accent: var(--accent);
+  --color-accent-ink: var(--accent-ink);
+  --color-accent-dim: var(--accent-dim);
+  --color-accent-line: var(--accent-line);
+  --color-ok: var(--ok);
+  --color-ok-dim: var(--ok-dim);
+  --color-warn: var(--warn);
+  --color-warn-dim: var(--warn-dim);
+  --color-err: var(--err);
+  --color-err-dim: var(--err-dim);
+  --font-sans: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --font-mono: ui-monospace, "SF Mono", SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
+  --shadow-card: var(--shadow);
+  --shadow-pop: var(--shadow-pop);
+}
+
+html {
+  background: var(--bg);
+  color: var(--fg);
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  background: var(--bg);
+  color: var(--fg);
+  font-family: var(--font-sans);
+  font-size: 14px;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+.tabular {
+  font-variant-numeric: tabular-nums;
+}
+
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+::selection {
+  background: var(--accent-dim);
+}
+
+/* Recharts focus outline on the svg wrapper is noise. */
+.recharts-wrapper:focus,
+.recharts-surface:focus {
+  outline: none;
+}
+
+@keyframes culprit-pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.35;
+  }
+}
+.pulse {
+  animation: culprit-pulse 1.6s ease-in-out infinite;
+}
+
+@keyframes culprit-in {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+.step-in {
+  animation: culprit-in 220ms cubic-bezier(0.2, 0, 0, 1) both;
+}
+
+@keyframes culprit-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+.spin {
+  animation: culprit-spin 0.9s linear infinite;
+}
+
+@keyframes culprit-slide {
+  from {
+    transform: translateX(16px);
+    opacity: 0;
+  }
+  to {
+    transform: none;
+    opacity: 1;
+  }
+}
+.panel-in {
+  animation: culprit-slide 200ms cubic-bezier(0.2, 0, 0, 1) both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+  .pulse {
+    animation: none;
+  }
+}
+
+details > summary {
+  list-style: none;
+}
+details > summary::-webkit-details-marker {
+  display: none;
+}
