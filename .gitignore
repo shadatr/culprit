@@ -1,0 +1,11 @@
+/bin/
+*.db
+*.db-*
+.env
+.env.*
+!.env.example
+node_modules/
+.next/
+web/out/
+eval/results/
+.DS_Store
