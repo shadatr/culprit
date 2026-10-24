@@ -39,6 +39,15 @@ func AgentConfig(c *config.Config) agent.Config {
 
 // Live builds an investigator over the live sources in c.
 func Live(c *config.Config, client llm.Client) (*agent.Investigator, error) {
+	deps, err := LiveDeps(c, client)
+	if err != nil {
+		return nil, err
+	}
+	return agent.New(deps, AgentConfig(c)), nil
+}
+
+// LiveDeps builds the live sources in c.
+func LiveDeps(c *config.Config, client llm.Client) (agent.Deps, error) {
 	deps := agent.Deps{LLM: client, Topology: c.Topology}
 	s := c.Sources
 	if s.Prometheus.URL != "" {
@@ -58,9 +67,9 @@ func Live(c *config.Config, client llm.Client) (*agent.Investigator, error) {
 		deps.Changes = MergeChanges(cs...)
 	}
 	if deps.Metrics == nil && deps.Logs == nil && deps.Changes == nil {
-		return nil, errors.New("app: no data sources configured")
+		return deps, errors.New("app: no data sources configured")
 	}
-	return agent.New(deps, AgentConfig(c)), nil
+	return deps, nil
 }
 
 // Scenario builds an investigator over a fixture scenario directory.
