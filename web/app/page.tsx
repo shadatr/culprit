@@ -3,6 +3,7 @@
 import Link from "next/link";
 import useSWR from "swr";
 import { API_BASE, MOCK, TERMINAL, listInvestigations, webhookUrl } from "@/lib/api";
+import { investigationHref } from "@/lib/routes";
 import { pct, relativeTime, stampUTC } from "@/lib/format";
 import { Card, ConfidenceBar, StatusPill, useNow } from "@/components/ui";
 
@@ -53,7 +54,7 @@ export default function InvestigationsPage() {
             {data.map((inv) => (
               <li key={inv.id} className="border-b border-line last:border-b-0">
                 <Link
-                  href={`/investigations/${encodeURIComponent(inv.id)}`}
+                  href={investigationHref(inv.id)}
                   className="grid grid-cols-[minmax(0,1fr)_auto] gap-x-3 gap-y-1.5 px-4 py-3 transition-colors hover:bg-hover focus-visible:bg-hover focus-visible:outline-offset-[-2px] md:grid-cols-[120px_minmax(0,1.3fr)_minmax(0,1.5fr)_88px] md:items-center md:gap-4"
                 >
                   <span className="order-2 md:order-none">

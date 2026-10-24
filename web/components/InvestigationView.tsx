@@ -1,7 +1,6 @@
 "use client";
 
 import Link from "next/link";
-import { useParams } from "next/navigation";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import useSWR from "swr";
 import { type Evidence, TERMINAL, getInvestigation } from "@/lib/api";
@@ -46,9 +45,7 @@ function PhaseBar({ phase }: { phase: Phase }) {
   );
 }
 
-export default function InvestigationPage() {
-  const params = useParams<{ id: string }>();
-  const id = decodeURIComponent(params?.id ?? "");
+export function InvestigationView({ id }: { id: string }) {
   const { data: inv, error, mutate } = useSWR(id ? ["investigation", id] : null, () => getInvestigation(id), {
     refreshInterval: (latest) => (latest && TERMINAL.has(latest.status) ? 0 : 5_000),
   });

@@ -3,6 +3,7 @@
 import { useRouter } from "next/navigation";
 import { useEffect, useId, useState } from "react";
 import { buildIncident, createInvestigation } from "@/lib/api";
+import { investigationHref } from "@/lib/routes";
 import { Card, Spinner } from "@/components/ui";
 
 const LOOKBACK = [
@@ -78,7 +79,7 @@ export default function NewInvestigationPage() {
     setSubmitting(true);
     try {
       const id = await createInvestigation(buildIncident({ title, service, start: startDate, lookbackMinutes: lookback, afterMinutes: after }));
-      router.push(`/investigations/${encodeURIComponent(id)}`);
+      router.push(investigationHref(id));
     } catch (err) {
       setError(err instanceof Error ? err.message : String(err));
       setSubmitting(false);
