@@ -1,0 +1,157 @@
+#!/usr/bin/env bash
+# chaos: inject a realistic incident into the Culprit demo stack.
+#
+#   demo/chaos bad-deploy   catalog 1.8.2 ships an N+1 query (latency)
+#   demo/chaos pool-leak    catalog 1.9.0 leaks DB connections (errors)
+#   demo/chaos redis-down   redis goes away; no change is recorded
+#   demo/chaos bad-config   frontend catalog timeout set to 50ms (errors)
+#   demo/chaos reset        restore the healthy stack
+#
+# Each scenario (except reset) also records one or two unrelated "decoy"
+# changes at random earlier times, so the change list has red herrings.
+# Works with the bash 3.2 that ships with macOS.
+set -euo pipefail
+
+DEMO_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+CHANGES_FILE="${CHAOS_CHANGES_FILE:-$DEMO_DIR/changes/changes.jsonl}"
+COMPOSE_FILE="$DEMO_DIR/docker-compose.yml"
+
+usage() {
+  sed -n '2,12p' "$0" | sed 's/^# \{0,1\}//'
+  exit 2
+}
+
+compose() {
+  docker compose -f "$COMPOSE_FILE" "$@"
+}
+
+# iso_at EPOCH -> 2026-10-24T12:00:00Z (BSD and GNU date).
+iso_at() {
+  date -u -r "$1" +%Y-%m-%dT%H:%M:%SZ 2>/dev/null || date -u -d "@$1" +%Y-%m-%dT%H:%M:%SZ
+}
+
+json_escape() {
+  local s=$1
+  s=${s//\\/\\\\}
+  s=${s//\"/\\\"}
+  s=${s//$'\n'/\\n}
+  s=${s//$'\t'/\\t}
+  printf '%s' "$s"
+}
+
+# record_change ID KIND SERVICE EPOCH AUTHOR SUMMARY [DIFF]
+# Appends one core.Change JSON line to the changes file.
+record_change() {
+  local id=$1 kind=$2 service=$3 epoch=$4 author=$5 summary=$6 diff=${7:-}
+  mkdir -p "$(dirname "$CHANGES_FILE")"
+  printf '{"id":"%s","kind":"%s","service":"%s","t":"%s","author":"%s","summary":"%s","diff":"%s"}\n' \
+    "$(json_escape "$id")" "$kind" "$service" "$(iso_at "$epoch")" \
+    "$(json_escape "$author")" "$(json_escape "$summary")" "$(json_escape "$diff")" >>"$CHANGES_FILE"
+  echo "  recorded $kind change $id ($service) at $(iso_at "$epoch")"
+}
+
+# record_decoys NOW: one or two unrelated changes 8-40 minutes before NOW.
+record_decoys() {
+  local now=$1 count i pick when
+  count=$((1 + RANDOM % 2))
+  for ((i = 0; i < count; i++)); do
+    pick=$(((RANDOM + i * 3) % 6))
+    when=$((now - 480 - RANDOM % 1920))
+    case $pick in
+      0) record_change "commit-cart-$when" commit cart "$when" "dana@shop.example" \
+        "cart: move TTL constants into config package" \
+        $'--- a/cart/ttl.go\n+++ b/cart/config/ttl.go\n-const summaryTTL = 30 * time.Second\n+const SummaryTTL = 30 * time.Second' ;;
+      1) record_change "flag-frontend-$when" flag frontend "$when" "growth-team" \
+        "flag new-checkout-banner rolled out to 5% of sessions" ;;
+      2) record_change "commit-catalog-$when" commit catalog "$when" "lee@shop.example" \
+        "catalog: fix typo in product image alt text" \
+        $'-alt="Prodcut image"\n+alt="Product image"' ;;
+      3) record_change "infra-postgres-$when" infra postgres "$when" "platform-team" \
+        "postgres: autovacuum_naptime 60s -> 30s" \
+        $'-autovacuum_naptime = 60s\n+autovacuum_naptime = 30s' ;;
+      4) record_change "deploy-cart-2.3.0-$when" deploy cart "$when" "deploy-bot" \
+        "Deploy cart 2.3.0: dependency bumps (go-redis, x/net)" ;;
+      *) record_change "config-frontend-$when" config frontend "$when" "sre-oncall" \
+        "frontend: access log sampling 10% -> 5%" \
+        $'-ACCESS_LOG_SAMPLE=0.10\n+ACCESS_LOG_SAMPLE=0.05' ;;
+    esac
+  done
+}
+
+require_stack() {
+  if [ -z "$(compose ps --status running -q frontend 2>/dev/null)" ]; then
+    echo "chaos: the demo stack is not running; start it with 'make -C demo up'" >&2
+    exit 1
+  fi
+}
+
+next_steps() {
+  local start=$1 service=$2 title=$3
+  cat <<EOF
+
+Incident injected at $start.
+Wait about 3 minutes for signals to build up, then run from the repo root:
+
+  culprit investigate -config demo/culprit.yaml -service $service -start $start -since 30m -title "$title"
+
+Restore the healthy stack afterwards with: demo/chaos reset
+EOF
+}
+
+scenario=${1:-}
+case $scenario in
+  bad-deploy)
+    require_stack
+    now=$(date +%s)
+    echo "Scenario bad-deploy: catalog 1.8.2 with an N+1 stock query"
+    record_decoys "$now"
+    record_change "deploy-catalog-1.8.2-$now" deploy catalog "$now" "deploy-bot" \
+      "Deploy catalog 1.8.2: show live warehouse stock on product listings" \
+      $'--- a/catalog/list.go\n+++ b/catalog/list.go\n-rows := q("SELECT id, name, price_cents, stock FROM products ORDER BY id LIMIT $1")\n+rows := q("SELECT id, name, price_cents FROM products ORDER BY id LIMIT $1")\n+for i := range out {\n+  out[i].Stock = q("SELECT sum(qty) FROM inventory WHERE product_id = $1", out[i].ID)\n+}'
+    CATALOG_VERSION=1.8.2 CATALOG_FAULT=n_plus_one compose up -d --no-deps --wait catalog
+    next_steps "$(iso_at "$now")" frontend "High p99 latency on frontend"
+    ;;
+  pool-leak)
+    require_stack
+    now=$(date +%s)
+    echo "Scenario pool-leak: catalog 1.9.0 leaks database connections"
+    record_decoys "$now"
+    record_change "deploy-catalog-1.9.0-$now" deploy catalog "$now" "deploy-bot" \
+      "Deploy catalog 1.9.0: fast path for featured products" \
+      $'--- a/catalog/get.go\n+++ b/catalog/get.go\n conn := pool.Acquire(ctx)\n-defer conn.Release()\n+if featured(id) {\n+  return cached(id) // early return\n+}\n+conn.Release()'
+    CATALOG_VERSION=1.9.0 CATALOG_FAULT=pool_leak compose up -d --no-deps --wait catalog
+    next_steps "$(iso_at "$now")" frontend "Elevated 5xx error rate on frontend"
+    ;;
+  redis-down)
+    require_stack
+    now=$(date +%s)
+    echo "Scenario redis-down: redis becomes unavailable (no change recorded)"
+    record_decoys "$now"
+    compose stop redis
+    next_steps "$(iso_at "$now")" frontend "Cart errors on frontend"
+    ;;
+  bad-config)
+    require_stack
+    now=$(date +%s)
+    echo "Scenario bad-config: frontend catalog client timeout 2s -> 50ms"
+    record_decoys "$now"
+    record_change "config-frontend-catalog-timeout-$now" config frontend "$now" "sre-oncall" \
+      "frontend: lower catalog client timeout to 50ms to cut tail latency" \
+      $'--- a/deploy/frontend.env\n+++ b/deploy/frontend.env\n-CATALOG_TIMEOUT=2s\n+CATALOG_TIMEOUT=50ms'
+    FRONTEND_CATALOG_TIMEOUT=50ms compose up -d --no-deps --wait frontend
+    next_steps "$(iso_at "$now")" frontend "Elevated 5xx error rate on frontend"
+    ;;
+  reset)
+    echo "Restoring the healthy stack (changes file is kept: it is history)"
+    unset CATALOG_VERSION CATALOG_FAULT FRONTEND_VERSION FRONTEND_FAULT FRONTEND_CATALOG_TIMEOUT
+    compose up -d --wait
+    echo "Healthy. Let it run a few minutes before the next scenario so there is a clean baseline."
+    ;;
+  -h | --help | help | "")
+    usage
+    ;;
+  *)
+    echo "chaos: unknown scenario '$scenario'" >&2
+    usage
+    ;;
+esac

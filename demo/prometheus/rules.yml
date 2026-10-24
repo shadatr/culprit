@@ -1,0 +1,39 @@
+# Recording rules producing the metric names Culprit expects (PLAN.md §5).
+# Every output keeps exactly one identifying label: `service`.
+groups:
+  - name: culprit-demo
+    interval: 5s
+    rules:
+      - record: http_request_duration_seconds:p99
+        expr: histogram_quantile(0.99, sum by (service, le) (rate(http_request_duration_seconds_bucket[1m])))
+
+      - record: http_requests:rate1m
+        expr: sum by (service) (rate(http_requests_total[1m]))
+
+      # `or ... * 0` keeps the ratio at 0 (instead of absent) before the first 5xx.
+      - record: http_errors:ratio1m
+        expr: |
+          (
+            sum by (service) (rate(http_errors_total[1m]))
+            or
+            sum by (service) (rate(http_requests_total[1m])) * 0
+          )
+          / sum by (service) (rate(http_requests_total[1m]))
+
+      # CPU cores used by the process (1.0 = one full core).
+      - record: process_cpu:ratio
+        expr: sum by (service) (rate(process_cpu_seconds_total[1m]))
+
+      - record: process_memory:bytes
+        expr: sum by (service) (process_resident_memory_bytes)
+
+      - record: db_pool_in_use:ratio
+        expr: sum by (service) (db_pool_connections_in_use) / sum by (service) (db_pool_connections_max)
+
+      - record: db_query_duration_seconds:p99
+        expr: histogram_quantile(0.99, sum by (service, le) (rate(db_query_duration_seconds_bucket[1m])))
+
+      - record: cache_hit:ratio
+        expr: |
+          sum by (service) (rate(cache_requests_total{result="hit"}[1m]))
+          / sum by (service) (rate(cache_requests_total[1m]))

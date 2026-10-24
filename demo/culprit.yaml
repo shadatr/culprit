@@ -1,0 +1,49 @@
+# Culprit configuration for the demo stack (docker-compose.yml in this folder).
+# Run Culprit from the repository root so the relative paths below resolve:
+#   culprit investigate -config demo/culprit.yaml ...
+# The API key is read from the environment variable named in api_key_env.
+# Never put a key in this file.
+
+llm:
+  base_url: https://api.openai.com/v1
+  api_key_env: CULPRIT_LLM_API_KEY
+  model: gpt-4.1-mini
+  temperature: 0
+  # Any OpenAI-compatible endpoint works. Examples:
+  #   Switchyard (gateway):  base_url: http://localhost:8000/v1   (key: your Switchyard key)
+  #   Ollama (local):        base_url: http://localhost:11434/v1  model: qwen2.5:14b
+  #                          (Ollama ignores the key; set CULPRIT_LLM_API_KEY=ollama)
+
+sources:
+  prometheus:
+    url: http://127.0.0.1:9090
+    # Recording rules defined in demo/prometheus/rules.yml (PLAN.md §5 names).
+    triage_metrics:
+      - http_request_duration_seconds:p99
+      - http_requests:rate1m
+      - http_errors:ratio1m
+      - process_cpu:ratio
+      - process_memory:bytes
+      - db_pool_in_use:ratio
+      - db_query_duration_seconds:p99
+      - cache_hit:ratio
+  loki:
+    url: http://127.0.0.1:3100
+    service_label: service
+  # Deploys, config changes and flag flips written by demo/chaos.
+  changes_file: demo/changes/changes.jsonl
+
+topology:
+  frontend: [catalog, cart]
+  catalog: [postgres]
+  cart: [redis]
+
+budgets:
+  max_steps: 12
+  max_duration: 3m
+  max_tokens: 120000
+
+server:
+  addr: 127.0.0.1:8090
+  db_path: culprit.db
+  cors_origin: http://localhost:3200
