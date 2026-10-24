@@ -1,0 +1,44 @@
+# Culprit configuration. Copy to culprit.yaml and edit.
+
+llm:
+  # Any OpenAI-compatible endpoint: OpenAI, Switchyard, OpenRouter, Ollama (http://localhost:11434/v1), vLLM.
+  base_url: https://api.openai.com/v1
+  api_key_env: CULPRIT_LLM_API_KEY   # the key is read from this env var, never from this file
+  model: gpt-4.1-mini
+  temperature: 0.1
+
+sources:
+  prometheus:
+    url: http://localhost:9090
+    # Selectors scanned during triage. Recording rules keep these cheap.
+    triage_metrics:
+      - http_request_duration_seconds:p99
+      - http_errors:ratio1m
+      - http_requests:rate1m
+      - process_cpu:ratio
+      - process_memory:bytes
+  loki:
+    url: http://localhost:3100
+    service_label: service
+  git:
+    repos:
+      - path: ../my-service
+        service: my-service
+  changes_file: deploys.jsonl   # one JSON change per line (deploys, config, flags)
+
+# service -> services it calls
+topology:
+  frontend: [catalog, cart]
+  catalog: [postgres]
+
+budgets:
+  max_steps: 12
+  max_duration: 3m
+  max_tokens: 120000
+
+server:
+  addr: 127.0.0.1:8090
+  db_path: culprit.db
+  cors_origin: http://localhost:3200
+  concurrency: 2
+  lookback: 1h
