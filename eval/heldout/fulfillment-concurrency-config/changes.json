@@ -1,0 +1,62 @@
+[
+  {
+    "id": "deploy-orders-3.8.9",
+    "kind": "deploy",
+    "service": "orders",
+    "t": "2026-11-04T07:45:31Z",
+    "author": "maria.k",
+    "summary": "orders 3.8.9: include currency in order summary response",
+    "diff": "--- a/api/order.go\n+++ b/api/order.go\n@@ -20,3 +20,4 @@\n \tTotal int64 `json:\"total\"`\n+\tCurrency string `json:\"currency\"`\n",
+    "url": "https://deploy.example.internal/orders/releases/3.8.9"
+  },
+  {
+    "id": "cfg-notifications-2c2d",
+    "kind": "config",
+    "service": "notifications",
+    "t": "2026-11-04T08:23:06Z",
+    "author": "a.novak",
+    "summary": "notifications: raise smtp pool size 8 -\u003e 12",
+    "diff": "--- a/config.yaml\n+++ b/config.yaml\n@@ -3 +3 @@\n-smtp_pool: 8\n+smtp_pool: 12\n",
+    "url": "https://git.example.internal/shop/infra/changes/cfg-notifications-2c2d"
+  },
+  {
+    "id": "deploy-auth-5.3.1",
+    "kind": "deploy",
+    "service": "auth",
+    "t": "2026-11-04T08:24:44Z",
+    "author": "maria.k",
+    "summary": "auth 5.3.1: bump golang.org/x/crypto to v0.41.0",
+    "diff": "--- a/go.mod\n+++ b/go.mod\n@@ -6 +6 @@\n-\tgolang.org/x/crypto v0.40.0\n+\tgolang.org/x/crypto v0.41.0\n",
+    "url": "https://deploy.example.internal/auth/releases/5.3.1"
+  },
+  {
+    "id": "flag-profile-a698",
+    "kind": "flag",
+    "service": "profile",
+    "t": "2026-11-04T08:25:21Z",
+    "author": "lin.chen",
+    "summary": "profile: enable avatar upload v2 for staff",
+    "diff": "avatar_v2:\n-  audience: none\n+  audience: staff\n",
+    "url": "https://flags.example.internal/audit/flag-profile-a698"
+  },
+  {
+    "id": "cfg-fulfillment-workers",
+    "kind": "config",
+    "service": "fulfillment",
+    "t": "2026-11-04T08:43:50Z",
+    "author": "p.silva",
+    "summary": "fulfillment: tune consumer settings for new label printer",
+    "diff": "--- a/deploy/fulfillment/config.yaml\n+++ b/deploy/fulfillment/config.yaml\n@@ -3,6 +3,6 @@ consumer:\n   topic: order-events\n   group: fulfillment\n-  max_poll_records: 500\n-  worker_concurrency: 20\n+  max_poll_records: 200\n+  worker_concurrency: 2\n",
+    "url": "https://git.example.internal/shop/infra/changes/cfg-fulfillment-workers"
+  },
+  {
+    "id": "deploy-notifications-2.7.0",
+    "kind": "deploy",
+    "service": "notifications",
+    "t": "2026-11-04T08:58:00Z",
+    "author": "e.lund",
+    "summary": "notifications 2.7.0: move email templates to MJML",
+    "diff": "--- a/templates/order_confirmed.html\n+++ b/templates/order_confirmed.mjml\n@@ -1,5 +1,9 @@\n-\u003chtml\u003e\u003cbody\u003e\n+\u003cmjml\u003e\u003cmj-body\u003e\n",
+    "url": "https://deploy.example.internal/notifications/releases/2.7.0"
+  }
+]

@@ -1,0 +1,18 @@
+name: frontend-bad-config
+description: "A frontend config change lowers the catalog client timeout from 2s to 200ms; product page requests to catalog time out and frontend errors rise while catalog itself is healthy. Red herring: a catalog deploy 11m before that adds new slow-query log lines."
+incident:
+  title: "Frontend error rate elevated on product pages"
+  service: frontend
+  started_at: "2026-10-22T08:55:00Z"
+  lookback: 2h
+  after: 30m
+topology:
+  frontend: [catalog, cart, search]
+  catalog: [postgres]
+  cart: [redis]
+  search: [catalog]
+truth:
+  service: frontend
+  change_id: cfg-frontend-catalog-timeout
+  category: config-change
+  keywords: ["timeout", "200ms", "config"]

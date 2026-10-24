@@ -1,0 +1,62 @@
+[
+  {
+    "id": "commit-fa32b13",
+    "kind": "commit",
+    "service": "payments",
+    "t": "2026-11-07T06:16:12Z",
+    "author": "maria.k",
+    "summary": "Clarify refund docs",
+    "diff": "--- a/docs/refunds.md\n+++ b/docs/refunds.md\n@@ -3 +3 @@\n-Refunds take 5 days.\n+Refunds take 5-10 business days.\n",
+    "url": "https://git.example.internal/shop/payments/commit/fa32b13"
+  },
+  {
+    "id": "flag-profile-79e7",
+    "kind": "flag",
+    "service": "profile",
+    "t": "2026-11-07T06:38:15Z",
+    "author": "j.okafor",
+    "summary": "profile: enable avatar upload v2 for staff",
+    "diff": "avatar_v2:\n-  audience: none\n+  audience: staff\n",
+    "url": "https://flags.example.internal/audit/flag-profile-79e7"
+  },
+  {
+    "id": "deploy-orders-3.8.7",
+    "kind": "deploy",
+    "service": "orders",
+    "t": "2026-11-07T06:57:54Z",
+    "author": "lin.chen",
+    "summary": "orders 3.8.7: include currency in order summary response",
+    "diff": "--- a/api/order.go\n+++ b/api/order.go\n@@ -20,3 +20,4 @@\n \tTotal int64 `json:\"total\"`\n+\tCurrency string `json:\"currency\"`\n",
+    "url": "https://deploy.example.internal/orders/releases/3.8.7"
+  },
+  {
+    "id": "deploy-gateway-2.14.2",
+    "kind": "deploy",
+    "service": "gateway",
+    "t": "2026-11-07T07:04:08Z",
+    "author": "j.okafor",
+    "summary": "gateway 2.14.2: add request id header to upstream calls",
+    "diff": "--- a/proxy/headers.go\n+++ b/proxy/headers.go\n@@ -11,3 +11,4 @@\n \treq.Header.Set(\"X-Forwarded-For\", ip)\n+\treq.Header.Set(\"X-Request-Id\", id)\n",
+    "url": "https://deploy.example.internal/gateway/releases/2.14.2"
+  },
+  {
+    "id": "cfg-notifications-4ef0",
+    "kind": "config",
+    "service": "notifications",
+    "t": "2026-11-07T07:07:21Z",
+    "author": "deploy-bot",
+    "summary": "notifications: raise smtp pool size 8 -\u003e 12",
+    "diff": "--- a/config.yaml\n+++ b/config.yaml\n@@ -3 +3 @@\n-smtp_pool: 8\n+smtp_pool: 12\n",
+    "url": "https://git.example.internal/shop/infra/changes/cfg-notifications-4ef0"
+  },
+  {
+    "id": "deploy-payments-5.1.0",
+    "kind": "deploy",
+    "service": "payments",
+    "t": "2026-11-07T07:34:00Z",
+    "author": "k.mensah",
+    "summary": "payments 5.1.0: retry idempotent captures once on 409",
+    "diff": "--- a/capture.go\n+++ b/capture.go\n@@ -22,3 +22,7 @@\n+\tif resp.StatusCode == http.StatusConflict {\n+\t\treturn c.capture(ctx, id)\n+\t}\n",
+    "url": "https://deploy.example.internal/payments/releases/5.1.0"
+  }
+]

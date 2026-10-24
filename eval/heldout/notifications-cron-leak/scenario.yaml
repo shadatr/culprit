@@ -1,0 +1,21 @@
+name: notifications-cron-leak
+description: "A weekly digest cron job inside notifications loads every subscriber into memory; memory grows for over two hours with no deploy until the pod is OOM-killed, then the job resumes and memory climbs again. Fulfillment, which calls notifications, sees slow calls and then connection errors. Red herring: a notifications template config change 30m before the alert and a fulfillment deploy 15m before."
+incident:
+  title: "Fulfillment handler errors rising"
+  service: fulfillment
+  started_at: "2026-11-09T14:20:00Z"
+  lookback: 3h
+  after: 30m
+topology:
+  gateway: [auth, orders, profile]
+  auth: [valkey]
+  orders: [inventory, payments, kafka]
+  profile: [mysql]
+  inventory: [mysql]
+  payments: [fx-api]
+  fulfillment: [kafka, inventory, notifications]
+  notifications: [mail-relay]
+truth:
+  service: notifications
+  category: resource-exhaustion
+  keywords: ["memory", "digest", "cron", "OOM"]

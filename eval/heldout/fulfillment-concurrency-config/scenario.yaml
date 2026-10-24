@@ -1,0 +1,22 @@
+name: fulfillment-concurrency-config
+description: "A config change sets the fulfillment worker's concurrency to 2 instead of 20; the worker falls behind on order-events, consumer lag grows for 26 minutes and confirmation emails stop flowing through notifications. Red herring: a notifications deploy 12m before the alert that switches email templates and logs new template warnings."
+incident:
+  title: "Order confirmation emails delayed"
+  service: notifications
+  started_at: "2026-11-04T09:10:00Z"
+  lookback: 2h
+  after: 30m
+topology:
+  gateway: [auth, orders, profile]
+  auth: [valkey]
+  orders: [inventory, payments, kafka]
+  profile: [mysql]
+  inventory: [mysql]
+  payments: [fx-api]
+  fulfillment: [kafka, inventory, notifications]
+  notifications: [mail-relay]
+truth:
+  service: fulfillment
+  change_id: cfg-fulfillment-workers
+  category: config-change
+  keywords: ["concurrency", "worker_concurrency", "workers"]

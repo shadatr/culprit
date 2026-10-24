@@ -1,0 +1,18 @@
+name: catalog-bad-deploy
+description: "catalog 1.8.2 adds an image gallery that loads images once per product (N+1 queries); catalog and frontend p99 rise. Red herring: a cart deploy 22m earlier and a frontend banner flag 2m before the alert."
+incident:
+  title: "High p99 latency on frontend"
+  service: frontend
+  started_at: "2026-10-20T14:05:00Z"
+  lookback: 2h
+  after: 30m
+topology:
+  frontend: [catalog, cart, search]
+  catalog: [postgres]
+  cart: [redis]
+  search: [catalog]
+truth:
+  service: catalog
+  change_id: deploy-catalog-1.8.2
+  category: bad-deploy
+  keywords: ["N+1", "product_images", "per product"]

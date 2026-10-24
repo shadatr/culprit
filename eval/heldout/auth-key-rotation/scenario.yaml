@@ -1,0 +1,22 @@
+name: auth-key-rotation
+description: "auth rotates its JWT signing key and retires the old one immediately, but gateway caches JWKS for 6h; tokens signed with the new kid fail verification, the gateway answers 401 and clients hammer auth with refreshes. Red herring: a gateway deploy 22m before the alert and a profile avatars flag 9m before."
+incident:
+  title: "Gateway 401 rate spiking"
+  service: gateway
+  started_at: "2026-11-06T13:05:00Z"
+  lookback: 2h
+  after: 30m
+topology:
+  gateway: [auth, orders, profile]
+  auth: [valkey]
+  orders: [inventory, payments, kafka]
+  profile: [mysql]
+  inventory: [mysql]
+  payments: [fx-api]
+  fulfillment: [kafka, inventory, notifications]
+  notifications: [mail-relay]
+truth:
+  service: auth
+  change_id: rotate-auth-signing-key
+  category: config-change
+  keywords: ["signing key", "kid", "JWKS", "rotat"]

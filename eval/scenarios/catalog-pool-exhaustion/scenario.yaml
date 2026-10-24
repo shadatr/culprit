@@ -1,0 +1,18 @@
+name: catalog-pool-exhaustion
+description: "catalog 1.9.0 calls the pricing API inside a DB transaction, holding pool connections for seconds; the pool saturates and requests fail with 'timeout acquiring connection'. Red herring: a postgres minor upgrade 45m before and a search flag 10m before."
+incident:
+  title: "Frontend 5xx error rate above 5%"
+  service: frontend
+  started_at: "2026-10-21T10:20:00Z"
+  lookback: 2h
+  after: 30m
+topology:
+  frontend: [catalog, cart, search]
+  catalog: [postgres]
+  cart: [redis]
+  search: [catalog]
+truth:
+  service: catalog
+  change_id: deploy-catalog-1.9.0
+  category: resource-exhaustion
+  keywords: ["pool", "connection", "transaction"]

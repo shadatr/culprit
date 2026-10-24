@@ -1,0 +1,72 @@
+[
+  {
+    "id": "commit-655b82d",
+    "kind": "commit",
+    "service": "frontend",
+    "t": "2026-10-21T11:33:09Z",
+    "author": "j.okafor",
+    "summary": "Fix typo in checkout confirmation email",
+    "diff": "--- a/templates/email/confirm.txt\n+++ b/templates/email/confirm.txt\n@@ -3 +3 @@\n-Thanks for you order!\n+Thanks for your order!\n",
+    "url": "https://git.example.internal/shop/frontend/commit/655b82d"
+  },
+  {
+    "id": "cfg-cart-f0cb",
+    "kind": "config",
+    "service": "cart",
+    "t": "2026-10-21T11:58:01Z",
+    "author": "j.okafor",
+    "summary": "cart: raise log sampling 1% -\u003e 5%",
+    "diff": "--- a/config/cart.yaml\n+++ b/config/cart.yaml\n@@ -2 +2 @@\n-log_sample: 0.01\n+log_sample: 0.05\n",
+    "url": "https://git.example.internal/shop/infra/changes/cfg-cart-f0cb"
+  },
+  {
+    "id": "commit-c84b4d8",
+    "kind": "commit",
+    "service": "cart",
+    "t": "2026-10-21T12:09:01Z",
+    "author": "j.okafor",
+    "summary": "Remove unused coupon v1 code path",
+    "diff": "--- a/internal/coupon/v1.go\n+++ /dev/null\n@@ -1,42 +0,0 @@\n-package coupon\n-// Deprecated: v1 coupons were retired in 2025.\n",
+    "url": "https://git.example.internal/shop/cart/commit/c84b4d8"
+  },
+  {
+    "id": "deploy-catalog-1.7.5",
+    "kind": "deploy",
+    "service": "catalog",
+    "t": "2026-10-21T12:09:12Z",
+    "author": "maria.k",
+    "summary": "catalog 1.7.5: refactor category handler tests",
+    "diff": "--- a/internal/http/category_test.go\n+++ b/internal/http/category_test.go\n@@ -1,5 +1,5 @@\n-func TestCategory(t *testing.T) {\n+func TestCategoryHandler(t *testing.T) {\n",
+    "url": "https://deploy.example.internal/catalog/releases/1.7.5"
+  },
+  {
+    "id": "flag-frontend-new-checkout",
+    "kind": "flag",
+    "service": "frontend",
+    "t": "2026-10-21T12:35:00Z",
+    "author": "lin.chen",
+    "summary": "frontend: enable new checkout layout for 10% of sessions",
+    "diff": "new_checkout:\n-  rollout: 0\n+  rollout: 10\n",
+    "url": "https://flags.example.internal/audit/flag-frontend-new-checkout"
+  },
+  {
+    "id": "deploy-cart-2.5.0",
+    "kind": "deploy",
+    "service": "cart",
+    "t": "2026-10-21T12:44:00Z",
+    "author": "j.okafor",
+    "summary": "cart 2.5.0: refactor cache key builder",
+    "diff": "--- a/internal/cache/cache.go\n+++ b/internal/cache/cache.go\n@@ -30,8 +30,8 @@ func (c *Cache) Put(ctx context.Context, cart Cart) error {\n-\tkey := fmt.Sprintf(\"cart:%s\", cart.ID)\n-\treturn c.rdb.Set(ctx, key, cart.Bytes(), c.ttl).Err()\n+\tkey := c.keys.Cart(cart.ID)\n+\treturn c.rdb.Set(ctx, key, cart.Bytes(), time.Duration(c.cfg.TTLSeconds)).Err()\n",
+    "url": "https://deploy.example.internal/cart/releases/2.5.0"
+  },
+  {
+    "id": "deploy-catalog-2.0.0",
+    "kind": "deploy",
+    "service": "catalog",
+    "t": "2026-10-21T13:14:00Z",
+    "author": "maria.k",
+    "summary": "catalog 2.0.0: migrate product queries from sqlc to ent ORM",
+    "diff": "--- a/internal/store/products.go\n+++ b/internal/store/products.go\n@@ -1,40 +1,38 @@\n-\trows, err := s.q.ListProductsByCategory(ctx, cat)\n+\trows, err := s.ent.Product.Query().Where(product.CategoryEQ(cat)).All(ctx)\n",
+    "url": "https://deploy.example.internal/catalog/releases/2.0.0"
+  }
+]

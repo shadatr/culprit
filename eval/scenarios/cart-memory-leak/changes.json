@@ -1,0 +1,62 @@
+[
+  {
+    "id": "deploy-cart-2.4.0",
+    "kind": "deploy",
+    "service": "cart",
+    "t": "2026-10-18T14:11:00Z",
+    "author": "dev.patel",
+    "summary": "cart 2.4.0: memoize promo eligibility per session",
+    "diff": "--- a/internal/promo/eligibility.go\n+++ b/internal/promo/eligibility.go\n@@ -9,8 +9,17 @@\n+var eligibilityCache = map[string][]Promo{} // keyed by session id\n+var cacheMu sync.Mutex\n+\n func Eligible(ctx context.Context, sess Session) []Promo {\n+\tcacheMu.Lock()\n+\tdefer cacheMu.Unlock()\n+\tif p, ok := eligibilityCache[sess.ID]; ok {\n+\t\treturn p\n+\t}\n \tp := computeEligible(ctx, sess)\n+\teligibilityCache[sess.ID] = p\n \treturn p\n",
+    "url": "https://deploy.example.internal/cart/releases/2.4.0"
+  },
+  {
+    "id": "commit-57942b8",
+    "kind": "commit",
+    "service": "catalog",
+    "t": "2026-10-18T14:51:19Z",
+    "author": "maria.k",
+    "summary": "Add index hint comment to products_by_category query",
+    "diff": "--- a/internal/store/queries.sql\n+++ b/internal/store/queries.sql\n@@ -20,6 +20,7 @@\n+-- uses idx_products_category_id\n SELECT p.id, p.name, p.price FROM products p WHERE p.category_id = $1\n",
+    "url": "https://git.example.internal/shop/catalog/commit/57942b8"
+  },
+  {
+    "id": "deploy-catalog-1.7.7",
+    "kind": "deploy",
+    "service": "catalog",
+    "t": "2026-10-18T14:57:32Z",
+    "author": "lin.chen",
+    "summary": "catalog 1.7.7: refactor category handler tests",
+    "diff": "--- a/internal/http/category_test.go\n+++ b/internal/http/category_test.go\n@@ -1,5 +1,5 @@\n-func TestCategory(t *testing.T) {\n+func TestCategoryHandler(t *testing.T) {\n",
+    "url": "https://deploy.example.internal/catalog/releases/1.7.7"
+  },
+  {
+    "id": "flag-catalog-083f",
+    "kind": "flag",
+    "service": "catalog",
+    "t": "2026-10-18T15:12:20Z",
+    "author": "lin.chen",
+    "summary": "catalog: enable recs-v2 in shadow mode (no user impact)",
+    "diff": "recs_v2:\n-  mode: off\n+  mode: shadow\n",
+    "url": "https://flags.example.internal/audit/flag-catalog-083f"
+  },
+  {
+    "id": "flag-catalog-recs-v2",
+    "kind": "flag",
+    "service": "catalog",
+    "t": "2026-10-18T16:10:00Z",
+    "author": "maria.k",
+    "summary": "catalog: enable recs-v2 for 20% of traffic",
+    "diff": "recs_v2:\n-  mode: shadow\n+  mode: on\n+  rollout: 20\n",
+    "url": "https://flags.example.internal/audit/flag-catalog-recs-v2"
+  },
+  {
+    "id": "deploy-frontend-4.11.2",
+    "kind": "deploy",
+    "service": "frontend",
+    "t": "2026-10-18T16:24:00Z",
+    "author": "lin.chen",
+    "summary": "frontend 4.11.2: lazy-load recommendation carousel",
+    "diff": "--- a/web/components/recs.tsx\n+++ b/web/components/recs.tsx\n@@ -3 +3 @@\n-import Carousel from './carousel'\n+const Carousel = lazy(() =\u003e import('./carousel'))\n",
+    "url": "https://deploy.example.internal/frontend/releases/4.11.2"
+  }
+]

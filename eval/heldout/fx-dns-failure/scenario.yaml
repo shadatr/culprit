@@ -1,0 +1,21 @@
+name: fx-dns-failure
+description: "The external FX rates provider's DNS stops resolving; payments cannot price non-EUR charges and fails after DNS timeouts, so orders and gateway checkout fail. No internal change is involved. Red herring: a payments deploy 16m before the alert."
+incident:
+  title: "Checkout failures on gateway"
+  service: gateway
+  started_at: "2026-11-07T07:50:00Z"
+  lookback: 2h
+  after: 30m
+topology:
+  gateway: [auth, orders, profile]
+  auth: [valkey]
+  orders: [inventory, payments, kafka]
+  profile: [mysql]
+  inventory: [mysql]
+  payments: [fx-api]
+  fulfillment: [kafka, inventory, notifications]
+  notifications: [mail-relay]
+truth:
+  service: fx-api
+  category: dependency-failure
+  keywords: ["DNS", "no such host", "lookup"]

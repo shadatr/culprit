@@ -1,0 +1,52 @@
+[
+  {
+    "id": "deploy-cart-2.2.9",
+    "kind": "deploy",
+    "service": "cart",
+    "t": "2026-10-19T02:12:18Z",
+    "author": "deploy-bot",
+    "summary": "cart 2.2.9: add checkout funnel step metric",
+    "diff": "--- a/internal/checkout/metrics.go\n+++ b/internal/checkout/metrics.go\n@@ -8,3 +8,8 @@\n+var funnelStep = prometheus.NewCounterVec(\n+\tprometheus.CounterOpts{Name: \"checkout_funnel_step_total\"},\n+\t[]string{\"step\"},\n+)\n",
+    "url": "https://deploy.example.internal/cart/releases/2.2.9"
+  },
+  {
+    "id": "deploy-frontend-4.10.2",
+    "kind": "deploy",
+    "service": "frontend",
+    "t": "2026-10-19T02:25:33Z",
+    "author": "lin.chen",
+    "summary": "frontend 4.10.2: bump golang.org/x/net to v0.38.0",
+    "diff": "--- a/go.mod\n+++ b/go.mod\n@@ -5,7 +5,7 @@\n-\tgolang.org/x/net v0.37.0\n+\tgolang.org/x/net v0.38.0\n",
+    "url": "https://deploy.example.internal/frontend/releases/4.10.2"
+  },
+  {
+    "id": "cfg-search-refresh",
+    "kind": "config",
+    "service": "search",
+    "t": "2026-10-19T02:30:00Z",
+    "author": "sam.r",
+    "summary": "search: nightly reindex window 02:00 -\u003e 03:00",
+    "diff": "--- a/config/search.yaml\n+++ b/config/search.yaml\n@@ -9 +9 @@\n-reindex_at: \"02:00\"\n+reindex_at: \"03:00\"\n",
+    "url": "https://git.example.internal/shop/infra/changes/cfg-search-refresh"
+  },
+  {
+    "id": "deploy-frontend-4.10.7",
+    "kind": "deploy",
+    "service": "frontend",
+    "t": "2026-10-19T02:47:21Z",
+    "author": "a.novak",
+    "summary": "frontend 4.10.7: bump golang.org/x/net to v0.38.0",
+    "diff": "--- a/go.mod\n+++ b/go.mod\n@@ -5,7 +5,7 @@\n-\tgolang.org/x/net v0.37.0\n+\tgolang.org/x/net v0.38.0\n",
+    "url": "https://deploy.example.internal/frontend/releases/4.10.7"
+  },
+  {
+    "id": "deploy-catalog-1.8.3",
+    "kind": "deploy",
+    "service": "catalog",
+    "t": "2026-10-19T03:10:00Z",
+    "author": "dev.patel",
+    "summary": "catalog 1.8.3: add product badge field to API response",
+    "diff": "--- a/internal/http/product.go\n+++ b/internal/http/product.go\n@@ -15,3 +15,4 @@ type productJSON struct {\n \tPrice float64 `json:\"price\"`\n+\tBadge string  `json:\"badge,omitempty\"`\n",
+    "url": "https://deploy.example.internal/catalog/releases/1.8.3"
+  }
+]

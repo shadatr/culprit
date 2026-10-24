@@ -1,0 +1,17 @@
+name: traffic-spike
+description: "A flash-sale newsletter sends 2.4x traffic to frontend with no change involved; frontend, search and catalog saturate CPU and latency and errors rise everywhere. Red herring: a search deploy 13m before and a catalog cache TTL config change 4m before the alert."
+incident:
+  title: "Frontend p99 latency and errors elevated"
+  service: frontend
+  started_at: "2026-10-19T12:00:00Z"
+  lookback: 2h
+  after: 30m
+topology:
+  frontend: [catalog, cart, search]
+  catalog: [postgres]
+  cart: [redis]
+  search: [catalog]
+truth:
+  service: frontend
+  category: traffic-spike
+  keywords: ["traffic", "spike", "load", "campaign"]

@@ -1,0 +1,21 @@
+name: kafka-leader-churn
+description: "A kafka broker keeps losing its controller session, so order-events partitions shrink their ISR and re-elect leaders repeatedly; fulfillment fetches fail with NOT_LEADER_OR_FOLLOWER, lag builds and orders sees produce errors. No change is involved. Red herring: a fulfillment deploy 8m before the alert, right at the onset."
+incident:
+  title: "Consumer lag high on order-events"
+  service: fulfillment
+  started_at: "2026-11-05T22:40:00Z"
+  lookback: 2h
+  after: 30m
+topology:
+  gateway: [auth, orders, profile]
+  auth: [valkey]
+  orders: [inventory, payments, kafka]
+  profile: [mysql]
+  inventory: [mysql]
+  payments: [fx-api]
+  fulfillment: [kafka, inventory, notifications]
+  notifications: [mail-relay]
+truth:
+  service: kafka
+  category: dependency-failure
+  keywords: ["leader", "ISR", "broker", "partition"]

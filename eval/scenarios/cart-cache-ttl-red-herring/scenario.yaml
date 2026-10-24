@@ -1,0 +1,18 @@
+name: cart-cache-ttl-red-herring
+description: "cart 2.5.0 passes the cache TTL in seconds where a time.Duration is expected (30 -\u003e 30ns), so cart keys expire almost immediately; as old keys age out over ~25m the cache hit ratio slides and cart latency climbs. Red herring (heavy): a large, scary catalog ORM migration deploy 1m before the alert, which logs new warnings but changes nothing."
+incident:
+  title: "Cart page latency high on frontend"
+  service: frontend
+  started_at: "2026-10-21T13:15:00Z"
+  lookback: 2h
+  after: 30m
+topology:
+  frontend: [catalog, cart, search]
+  catalog: [postgres]
+  cart: [redis]
+  search: [catalog]
+truth:
+  service: cart
+  change_id: deploy-cart-2.5.0
+  category: bad-deploy
+  keywords: ["TTL", "expire", "cache miss"]

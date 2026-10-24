@@ -1,0 +1,21 @@
+name: mysql-disk-full
+description: "Binary logs on the mysql primary are not purged and the data volume fills over 100 minutes; once it is full, writes block or fail with errno 28, inventory reservations and profile updates error and orders fail at the gateway. No change is involved. Red herring: an inventory deploy 9m before the alert and an orders config change 30m before."
+incident:
+  title: "Gateway 5xx on order placement"
+  service: gateway
+  started_at: "2026-11-08T18:15:00Z"
+  lookback: 2h
+  after: 30m
+topology:
+  gateway: [auth, orders, profile]
+  auth: [valkey]
+  orders: [inventory, payments, kafka]
+  profile: [mysql]
+  inventory: [mysql]
+  payments: [fx-api]
+  fulfillment: [kafka, inventory, notifications]
+  notifications: [mail-relay]
+truth:
+  service: mysql
+  category: resource-exhaustion
+  keywords: ["disk", "space", "errno 28", "full"]

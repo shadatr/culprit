@@ -1,0 +1,72 @@
+[
+  {
+    "id": "deploy-fulfillment-0.19.3",
+    "kind": "deploy",
+    "service": "fulfillment",
+    "t": "2026-11-03T10:21:25Z",
+    "author": "deploy-bot",
+    "summary": "fulfillment 0.19.3: log carrier name on label creation",
+    "diff": "--- a/labels.go\n+++ b/labels.go\n@@ -30,3 +30,4 @@\n+\tslog.Info(\"label created\", \"carrier\", l.Carrier)\n",
+    "url": "https://deploy.example.internal/fulfillment/releases/0.19.3"
+  },
+  {
+    "id": "deploy-auth-5.3.9",
+    "kind": "deploy",
+    "service": "auth",
+    "t": "2026-11-03T10:22:02Z",
+    "author": "j.okafor",
+    "summary": "auth 5.3.9: bump golang.org/x/crypto to v0.41.0",
+    "diff": "--- a/go.mod\n+++ b/go.mod\n@@ -6 +6 @@\n-\tgolang.org/x/crypto v0.40.0\n+\tgolang.org/x/crypto v0.41.0\n",
+    "url": "https://deploy.example.internal/auth/releases/5.3.9"
+  },
+  {
+    "id": "commit-5106635",
+    "kind": "commit",
+    "service": "payments",
+    "t": "2026-11-03T10:36:48Z",
+    "author": "j.okafor",
+    "summary": "Clarify refund docs",
+    "diff": "--- a/docs/refunds.md\n+++ b/docs/refunds.md\n@@ -3 +3 @@\n-Refunds take 5 days.\n+Refunds take 5-10 business days.\n",
+    "url": "https://git.example.internal/shop/payments/commit/5106635"
+  },
+  {
+    "id": "deploy-auth-5.3.8",
+    "kind": "deploy",
+    "service": "auth",
+    "t": "2026-11-03T10:53:29Z",
+    "author": "lin.chen",
+    "summary": "auth 5.3.8: bump golang.org/x/crypto to v0.41.0",
+    "diff": "--- a/go.mod\n+++ b/go.mod\n@@ -6 +6 @@\n-\tgolang.org/x/crypto v0.40.0\n+\tgolang.org/x/crypto v0.41.0\n",
+    "url": "https://deploy.example.internal/auth/releases/5.3.8"
+  },
+  {
+    "id": "flag-payments-3ds-v2",
+    "kind": "flag",
+    "service": "payments",
+    "t": "2026-11-03T11:05:00Z",
+    "author": "k.mensah",
+    "summary": "payments: enable 3-D Secure v2 for 30% of EU cards",
+    "diff": "threeds_v2:\n-  rollout: 0\n+  rollout: 30\n",
+    "url": "https://flags.example.internal/audit/flag-payments-3ds-v2"
+  },
+  {
+    "id": "deploy-inventory-3.2.0",
+    "kind": "deploy",
+    "service": "inventory",
+    "t": "2026-11-03T11:13:00Z",
+    "author": "r.haddad",
+    "summary": "inventory 3.2.0: case-insensitive SKU lookup",
+    "diff": "--- a/store/stock.go\n+++ b/store/stock.go\n@@ -40,7 +40,7 @@ func (s *Store) Reserve(ctx context.Context, tx *sql.Tx, sku string, qty int) error {\n-\trow := tx.QueryRowContext(ctx, `SELECT qty, reserved FROM stock WHERE sku = ? FOR UPDATE`, sku)\n+\trow := tx.QueryRowContext(ctx, `SELECT qty, reserved FROM stock WHERE LOWER(sku) = ? FOR UPDATE`, strings.ToLower(sku))\n",
+    "url": "https://deploy.example.internal/inventory/releases/3.2.0"
+  },
+  {
+    "id": "deploy-gateway-2.15.0",
+    "kind": "deploy",
+    "service": "gateway",
+    "t": "2026-11-03T11:22:00Z",
+    "author": "t.ivanova",
+    "summary": "gateway 2.15.0: upgrade proxy to HTTP/2 upstream connections",
+    "diff": "--- a/proxy/transport.go\n+++ b/proxy/transport.go\n@@ -8,3 +8,3 @@\n-\tForceAttemptHTTP2: false,\n+\tForceAttemptHTTP2: true,\n",
+    "url": "https://deploy.example.internal/gateway/releases/2.15.0"
+  }
+]

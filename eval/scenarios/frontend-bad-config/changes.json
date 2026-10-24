@@ -1,0 +1,72 @@
+[
+  {
+    "id": "deploy-cart-2.2.5",
+    "kind": "deploy",
+    "service": "cart",
+    "t": "2026-10-22T07:13:53Z",
+    "author": "a.novak",
+    "summary": "cart 2.2.5: add checkout funnel step metric",
+    "diff": "--- a/internal/checkout/metrics.go\n+++ b/internal/checkout/metrics.go\n@@ -8,3 +8,8 @@\n+var funnelStep = prometheus.NewCounterVec(\n+\tprometheus.CounterOpts{Name: \"checkout_funnel_step_total\"},\n+\t[]string{\"step\"},\n+)\n",
+    "url": "https://deploy.example.internal/cart/releases/2.2.5"
+  },
+  {
+    "id": "deploy-catalog-1.7.4",
+    "kind": "deploy",
+    "service": "catalog",
+    "t": "2026-10-22T07:15:38Z",
+    "author": "a.novak",
+    "summary": "catalog 1.7.4: add request id to access logs",
+    "diff": "--- a/internal/http/middleware.go\n+++ b/internal/http/middleware.go\n@@ -40,6 +40,7 @@ func accessLog(next http.Handler) http.Handler {\n \t\tslog.Info(\"request\",\n+\t\t\t\"req\", RequestID(r.Context()),\n \t\t\t\"path\", r.URL.Path,\n",
+    "url": "https://deploy.example.internal/catalog/releases/1.7.4"
+  },
+  {
+    "id": "deploy-search-3.1.8",
+    "kind": "deploy",
+    "service": "search",
+    "t": "2026-10-22T07:15:55Z",
+    "author": "sam.r",
+    "summary": "search 3.1.8: update synonyms list for outdoor category",
+    "diff": "--- a/data/synonyms.txt\n+++ b/data/synonyms.txt\n@@ -88,3 +88,5 @@\n+waterproof, rainproof\n+beanie, wool hat\n",
+    "url": "https://deploy.example.internal/search/releases/3.1.8"
+  },
+  {
+    "id": "deploy-frontend-4.10.4",
+    "kind": "deploy",
+    "service": "frontend",
+    "t": "2026-10-22T07:55:07Z",
+    "author": "deploy-bot",
+    "summary": "frontend 4.10.4: bump golang.org/x/net to v0.38.0",
+    "diff": "--- a/go.mod\n+++ b/go.mod\n@@ -5,7 +5,7 @@\n-\tgolang.org/x/net v0.37.0\n+\tgolang.org/x/net v0.38.0\n",
+    "url": "https://deploy.example.internal/frontend/releases/4.10.4"
+  },
+  {
+    "id": "deploy-search-3.1.5",
+    "kind": "deploy",
+    "service": "search",
+    "t": "2026-10-22T08:12:50Z",
+    "author": "lin.chen",
+    "summary": "search 3.1.5: upgrade tokenizer library to v2.3.1",
+    "diff": "--- a/go.mod\n+++ b/go.mod\n@@ -9,7 +9,7 @@\n-\tgithub.com/example/tokenize v2.3.0\n+\tgithub.com/example/tokenize v2.3.1\n",
+    "url": "https://deploy.example.internal/search/releases/3.1.5"
+  },
+  {
+    "id": "deploy-catalog-1.8.4",
+    "kind": "deploy",
+    "service": "catalog",
+    "t": "2026-10-22T08:44:00Z",
+    "author": "maria.k",
+    "summary": "catalog 1.8.4: record query plan hashes for slow-query analysis",
+    "diff": "--- a/internal/store/trace.go\n+++ b/internal/store/trace.go\n@@ -12,3 +12,9 @@\n+func (s *Store) recordPlan(ctx context.Context, name string) {\n+\th := s.planHash(ctx, name)\n+\tslog.Info(\"query plan recorded\", \"query\", name, \"plan_hash\", h)\n+}\n",
+    "url": "https://deploy.example.internal/catalog/releases/1.8.4"
+  },
+  {
+    "id": "cfg-frontend-catalog-timeout",
+    "kind": "config",
+    "service": "frontend",
+    "t": "2026-10-22T08:49:40Z",
+    "author": "sam.r",
+    "summary": "frontend: tune upstream client timeouts",
+    "diff": "--- a/config/frontend.yaml\n+++ b/config/frontend.yaml\n@@ -14,9 +14,9 @@ upstreams:\n   catalog:\n     url: http://catalog:8080\n-    timeout: 2s\n+    timeout: 200ms\n     retries: 1\n   cart:\n     url: http://cart:8080\n-    timeout: 1s\n+    timeout: 800ms\n",
+    "url": "https://git.example.internal/shop/infra/changes/cfg-frontend-catalog-timeout"
+  }
+]

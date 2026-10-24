@@ -1,0 +1,62 @@
+[
+  {
+    "id": "deploy-cart-2.2.2",
+    "kind": "deploy",
+    "service": "cart",
+    "t": "2026-10-19T10:12:40Z",
+    "author": "maria.k",
+    "summary": "cart 2.2.2: add checkout funnel step metric",
+    "diff": "--- a/internal/checkout/metrics.go\n+++ b/internal/checkout/metrics.go\n@@ -8,3 +8,8 @@\n+var funnelStep = prometheus.NewCounterVec(\n+\tprometheus.CounterOpts{Name: \"checkout_funnel_step_total\"},\n+\t[]string{\"step\"},\n+)\n",
+    "url": "https://deploy.example.internal/cart/releases/2.2.2"
+  },
+  {
+    "id": "deploy-search-3.1.9",
+    "kind": "deploy",
+    "service": "search",
+    "t": "2026-10-19T10:30:21Z",
+    "author": "maria.k",
+    "summary": "search 3.1.9: update synonyms list for outdoor category",
+    "diff": "--- a/data/synonyms.txt\n+++ b/data/synonyms.txt\n@@ -88,3 +88,5 @@\n+waterproof, rainproof\n+beanie, wool hat\n",
+    "url": "https://deploy.example.internal/search/releases/3.1.9"
+  },
+  {
+    "id": "flag-catalog-2c35",
+    "kind": "flag",
+    "service": "catalog",
+    "t": "2026-10-19T10:41:01Z",
+    "author": "j.okafor",
+    "summary": "catalog: enable recs-v2 in shadow mode (no user impact)",
+    "diff": "recs_v2:\n-  mode: off\n+  mode: shadow\n",
+    "url": "https://flags.example.internal/audit/flag-catalog-2c35"
+  },
+  {
+    "id": "deploy-cart-2.2.4",
+    "kind": "deploy",
+    "service": "cart",
+    "t": "2026-10-19T11:13:37Z",
+    "author": "maria.k",
+    "summary": "cart 2.2.4: add checkout funnel step metric",
+    "diff": "--- a/internal/checkout/metrics.go\n+++ b/internal/checkout/metrics.go\n@@ -8,3 +8,8 @@\n+var funnelStep = prometheus.NewCounterVec(\n+\tprometheus.CounterOpts{Name: \"checkout_funnel_step_total\"},\n+\t[]string{\"step\"},\n+)\n",
+    "url": "https://deploy.example.internal/cart/releases/2.2.4"
+  },
+  {
+    "id": "deploy-search-3.2.1",
+    "kind": "deploy",
+    "service": "search",
+    "t": "2026-10-19T11:47:00Z",
+    "author": "sam.r",
+    "summary": "search 3.2.1: boost in-stock items in ranking",
+    "diff": "--- a/internal/rank/score.go\n+++ b/internal/rank/score.go\n@@ -40,3 +40,6 @@\n+\tif doc.InStock {\n+\t\tscore *= 1.1\n+\t}\n",
+    "url": "https://deploy.example.internal/search/releases/3.2.1"
+  },
+  {
+    "id": "cfg-catalog-cache-ttl",
+    "kind": "config",
+    "service": "catalog",
+    "t": "2026-10-19T11:56:00Z",
+    "author": "maria.k",
+    "summary": "catalog: price cache TTL 60s -\u003e 90s",
+    "diff": "--- a/config/catalog.yaml\n+++ b/config/catalog.yaml\n@@ -6 +6 @@\n-price_cache_ttl: 60s\n+price_cache_ttl: 90s\n",
+    "url": "https://git.example.internal/shop/infra/changes/cfg-catalog-cache-ttl"
+  }
+]

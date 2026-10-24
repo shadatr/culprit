@@ -1,0 +1,18 @@
+name: cart-memory-leak
+description: "cart 2.4.0 memoizes promo eligibility per session in a map that is never evicted; from the deploy 2h19m before the alert memory ramps and cart is OOM-killed repeatedly, causing bursts of checkout failures. Red herring: a frontend deploy 6m before the alert and a catalog recs flag 20m before."
+incident:
+  title: "Intermittent checkout failures on frontend"
+  service: frontend
+  started_at: "2026-10-18T16:30:00Z"
+  lookback: 3h
+  after: 30m
+topology:
+  frontend: [catalog, cart, search]
+  catalog: [postgres]
+  cart: [redis]
+  search: [catalog]
+truth:
+  service: cart
+  change_id: deploy-cart-2.4.0
+  category: resource-exhaustion
+  keywords: ["memory", "leak", "OOM"]

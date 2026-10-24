@@ -1,0 +1,62 @@
+[
+  {
+    "id": "flag-search-9323",
+    "kind": "flag",
+    "service": "search",
+    "t": "2026-10-19T22:06:38Z",
+    "author": "a.novak",
+    "summary": "search: enable typo_tolerance for 10% of queries",
+    "diff": "typo_tolerance:\n-  rollout: 0\n+  rollout: 10\n",
+    "url": "https://flags.example.internal/audit/flag-search-9323"
+  },
+  {
+    "id": "flag-search-6e0e",
+    "kind": "flag",
+    "service": "search",
+    "t": "2026-10-19T22:10:30Z",
+    "author": "deploy-bot",
+    "summary": "search: enable typo_tolerance for 10% of queries",
+    "diff": "typo_tolerance:\n-  rollout: 0\n+  rollout: 10\n",
+    "url": "https://flags.example.internal/audit/flag-search-6e0e"
+  },
+  {
+    "id": "deploy-frontend-4.10.6",
+    "kind": "deploy",
+    "service": "frontend",
+    "t": "2026-10-19T22:16:34Z",
+    "author": "maria.k",
+    "summary": "frontend 4.10.6: update product card copy and footer links",
+    "diff": "--- a/web/templates/product_card.html\n+++ b/web/templates/product_card.html\n@@ -12,7 +12,7 @@\n-  \u003cspan class=\"cta\"\u003eAdd to basket\u003c/span\u003e\n+  \u003cspan class=\"cta\"\u003eAdd to cart\u003c/span\u003e\n",
+    "url": "https://deploy.example.internal/frontend/releases/4.10.6"
+  },
+  {
+    "id": "deploy-catalog-1.7.1",
+    "kind": "deploy",
+    "service": "catalog",
+    "t": "2026-10-19T22:41:25Z",
+    "author": "maria.k",
+    "summary": "catalog 1.7.1: add request id to access logs",
+    "diff": "--- a/internal/http/middleware.go\n+++ b/internal/http/middleware.go\n@@ -40,6 +40,7 @@ func accessLog(next http.Handler) http.Handler {\n \t\tslog.Info(\"request\",\n+\t\t\t\"req\", RequestID(r.Context()),\n \t\t\t\"path\", r.URL.Path,\n",
+    "url": "https://deploy.example.internal/catalog/releases/1.7.1"
+  },
+  {
+    "id": "flag-search-e1e9",
+    "kind": "flag",
+    "service": "search",
+    "t": "2026-10-19T23:06:50Z",
+    "author": "sam.r",
+    "summary": "search: enable typo_tolerance for 10% of queries",
+    "diff": "typo_tolerance:\n-  rollout: 0\n+  rollout: 10\n",
+    "url": "https://flags.example.internal/audit/flag-search-e1e9"
+  },
+  {
+    "id": "deploy-search-3.3.0",
+    "kind": "deploy",
+    "service": "search",
+    "t": "2026-10-19T23:28:00Z",
+    "author": "sam.r",
+    "summary": "search 3.3.0: tune BM25 weights for title field",
+    "diff": "--- a/config/ranking.yaml\n+++ b/config/ranking.yaml\n@@ -2,3 +2,3 @@\n fields:\n-  title: 2.0\n+  title: 2.5\n",
+    "url": "https://deploy.example.internal/search/releases/3.3.0"
+  }
+]

@@ -1,0 +1,72 @@
+[
+  {
+    "id": "commit-7faea63",
+    "kind": "commit",
+    "service": "search",
+    "t": "2026-10-21T08:30:30Z",
+    "author": "maria.k",
+    "summary": "Document ranking parameters in README",
+    "diff": "--- a/README.md\n+++ b/README.md\n@@ -40,3 +40,9 @@\n+## Ranking\n+BM25 with k1=1.2, b=0.75.\n",
+    "url": "https://git.example.internal/shop/search/commit/7faea63"
+  },
+  {
+    "id": "flag-search-4b6c",
+    "kind": "flag",
+    "service": "search",
+    "t": "2026-10-21T09:18:45Z",
+    "author": "sam.r",
+    "summary": "search: enable typo_tolerance for 10% of queries",
+    "diff": "typo_tolerance:\n-  rollout: 0\n+  rollout: 10\n",
+    "url": "https://flags.example.internal/audit/flag-search-4b6c"
+  },
+  {
+    "id": "flag-catalog-bbf2",
+    "kind": "flag",
+    "service": "catalog",
+    "t": "2026-10-21T09:31:36Z",
+    "author": "dev.patel",
+    "summary": "catalog: enable recs-v2 in shadow mode (no user impact)",
+    "diff": "recs_v2:\n-  mode: off\n+  mode: shadow\n",
+    "url": "https://flags.example.internal/audit/flag-catalog-bbf2"
+  },
+  {
+    "id": "infra-postgres-16.4",
+    "kind": "infra",
+    "service": "postgres",
+    "t": "2026-10-21T09:35:00Z",
+    "author": "a.novak",
+    "summary": "postgres: minor upgrade 16.3 -\u003e 16.4 (rolling restart)",
+    "diff": "--- a/infra/postgres.tf\n+++ b/infra/postgres.tf\n@@ -3 +3 @@\n-  engine_version = \"16.3\"\n+  engine_version = \"16.4\"\n",
+    "url": "https://git.example.internal/shop/infra/changes/infra-postgres-16.4"
+  },
+  {
+    "id": "deploy-frontend-4.10.8",
+    "kind": "deploy",
+    "service": "frontend",
+    "t": "2026-10-21T09:47:37Z",
+    "author": "a.novak",
+    "summary": "frontend 4.10.8: bump golang.org/x/net to v0.38.0",
+    "diff": "--- a/go.mod\n+++ b/go.mod\n@@ -5,7 +5,7 @@\n-\tgolang.org/x/net v0.37.0\n+\tgolang.org/x/net v0.38.0\n",
+    "url": "https://deploy.example.internal/frontend/releases/4.10.8"
+  },
+  {
+    "id": "deploy-catalog-1.9.0",
+    "kind": "deploy",
+    "service": "catalog",
+    "t": "2026-10-21T09:56:00Z",
+    "author": "dev.patel",
+    "summary": "catalog 1.9.0: reserve stock atomically with price check",
+    "diff": "--- a/internal/stock/reserve.go\n+++ b/internal/stock/reserve.go\n@@ -22,9 +22,18 @@ func (s *Service) Reserve(ctx context.Context, sku string, qty int) error {\n-\treturn s.store.Decrement(ctx, sku, qty)\n+\ttx, err := s.db.BeginTx(ctx, nil)\n+\tif err != nil {\n+\t\treturn err\n+\t}\n+\tdefer tx.Rollback()\n+\tprice, err := s.pricing.Quote(ctx, sku) // HTTP call to pricing API while tx holds a connection\n+\tif err != nil {\n+\t\treturn err\n+\t}\n+\tif err := s.store.DecrementTx(ctx, tx, sku, qty, price); err != nil {\n+\t\treturn err\n+\t}\n+\treturn tx.Commit()\n",
+    "url": "https://deploy.example.internal/catalog/releases/1.9.0"
+  },
+  {
+    "id": "flag-search-typo-tolerance",
+    "kind": "flag",
+    "service": "search",
+    "t": "2026-10-21T10:10:00Z",
+    "author": "sam.r",
+    "summary": "search: enable typo_tolerance for 50% of queries",
+    "diff": "typo_tolerance:\n-  rollout: 10\n+  rollout: 50\n",
+    "url": "https://flags.example.internal/audit/flag-search-typo-tolerance"
+  }
+]

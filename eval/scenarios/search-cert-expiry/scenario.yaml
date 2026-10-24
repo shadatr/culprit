@@ -1,0 +1,17 @@
+name: search-cert-expiry
+description: "The TLS serving certificate of search expires at midnight (renewal had failed); frontend calls to search fail with x509 errors and search traffic drops to almost zero. No change is involved. Red herring: a search deploy 34m before the alert on the culprit service itself."
+incident:
+  title: "Search requests failing on frontend"
+  service: frontend
+  started_at: "2026-10-20T00:02:00Z"
+  lookback: 2h
+  after: 30m
+topology:
+  frontend: [catalog, cart, search]
+  catalog: [postgres]
+  cart: [redis]
+  search: [catalog]
+truth:
+  service: search
+  category: certificate-expiry
+  keywords: ["certificate", "x509", "TLS", "expired"]

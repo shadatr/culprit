@@ -1,0 +1,62 @@
+[
+  {
+    "id": "deploy-cart-2.2.2",
+    "kind": "deploy",
+    "service": "cart",
+    "t": "2026-10-21T17:56:29Z",
+    "author": "j.okafor",
+    "summary": "cart 2.2.2: increase readiness probe initialDelaySeconds 5 -\u003e 10",
+    "diff": "--- a/deploy/cart.yaml\n+++ b/deploy/cart.yaml\n@@ -31,7 +31,7 @@\n         readinessProbe:\n-          initialDelaySeconds: 5\n+          initialDelaySeconds: 10\n",
+    "url": "https://deploy.example.internal/cart/releases/2.2.2"
+  },
+  {
+    "id": "cfg-cart-178d",
+    "kind": "config",
+    "service": "cart",
+    "t": "2026-10-21T17:58:15Z",
+    "author": "j.okafor",
+    "summary": "cart: raise log sampling 1% -\u003e 5%",
+    "diff": "--- a/config/cart.yaml\n+++ b/config/cart.yaml\n@@ -2 +2 @@\n-log_sample: 0.01\n+log_sample: 0.05\n",
+    "url": "https://git.example.internal/shop/infra/changes/cfg-cart-178d"
+  },
+  {
+    "id": "commit-4b2e9a1",
+    "kind": "commit",
+    "service": "cart",
+    "t": "2026-10-21T18:50:00Z",
+    "author": "j.okafor",
+    "summary": "Log cart size on checkout",
+    "diff": "--- a/internal/checkout/handler.go\n+++ b/internal/checkout/handler.go\n@@ -30,6 +30,7 @@\n+\tslog.Debug(\"checkout\", \"items\", len(c.Items))\n",
+    "url": "https://git.example.internal/shop/cart/commit/4b2e9a1"
+  },
+  {
+    "id": "deploy-frontend-4.10.8",
+    "kind": "deploy",
+    "service": "frontend",
+    "t": "2026-10-21T18:55:35Z",
+    "author": "deploy-bot",
+    "summary": "frontend 4.10.8: update product card copy and footer links",
+    "diff": "--- a/web/templates/product_card.html\n+++ b/web/templates/product_card.html\n@@ -12,7 +12,7 @@\n-  \u003cspan class=\"cta\"\u003eAdd to basket\u003c/span\u003e\n+  \u003cspan class=\"cta\"\u003eAdd to cart\u003c/span\u003e\n",
+    "url": "https://deploy.example.internal/frontend/releases/4.10.8"
+  },
+  {
+    "id": "flag-catalog-a276",
+    "kind": "flag",
+    "service": "catalog",
+    "t": "2026-10-21T18:59:26Z",
+    "author": "deploy-bot",
+    "summary": "catalog: enable recs-v2 in shadow mode (no user impact)",
+    "diff": "recs_v2:\n-  mode: off\n+  mode: shadow\n",
+    "url": "https://flags.example.internal/audit/flag-catalog-a276"
+  },
+  {
+    "id": "deploy-frontend-4.12.0",
+    "kind": "deploy",
+    "service": "frontend",
+    "t": "2026-10-21T19:33:00Z",
+    "author": "lin.chen",
+    "summary": "frontend 4.12.0: restyle checkout button and order summary",
+    "diff": "--- a/web/styles/checkout.css\n+++ b/web/styles/checkout.css\n@@ -10,4 +10,6 @@\n-.checkout-btn { background: #2a6; }\n+.checkout-btn { background: #1f8a4c; border-radius: 6px; }\n",
+    "url": "https://deploy.example.internal/frontend/releases/4.12.0"
+  }
+]

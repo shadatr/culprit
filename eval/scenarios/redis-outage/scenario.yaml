@@ -1,0 +1,17 @@
+name: redis-outage
+description: "The redis primary host fails with no preceding change; cart cannot reach the cache (connection refused), cache hit ratio collapses and checkout errors rise on frontend. Redis comes back about 17m after the alert. Red herring: a frontend deploy 9m before the alert on the symptomatic service."
+incident:
+  title: "Checkout errors on frontend"
+  service: frontend
+  started_at: "2026-10-21T19:42:00Z"
+  lookback: 2h
+  after: 30m
+topology:
+  frontend: [catalog, cart, search]
+  catalog: [postgres]
+  cart: [redis]
+  search: [catalog]
+truth:
+  service: redis
+  category: dependency-failure
+  keywords: ["redis", "connection refused", "cache"]

@@ -1,0 +1,17 @@
+name: slow-postgres
+description: "An anti-wraparound autovacuum on a large table saturates postgres disk I/O with no change involved; catalog db_query p99 rises 9x, catalog and frontend latency follow. Red herring: a catalog deploy 10m before the alert."
+incident:
+  title: "Frontend p99 latency high"
+  service: frontend
+  started_at: "2026-10-19T03:20:00Z"
+  lookback: 2h
+  after: 30m
+topology:
+  frontend: [catalog, cart, search]
+  catalog: [postgres]
+  cart: [redis]
+  search: [catalog]
+truth:
+  service: postgres
+  category: resource-exhaustion
+  keywords: ["vacuum", "I/O", "disk", "checkpoint"]

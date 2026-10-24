@@ -1,0 +1,72 @@
+[
+  {
+    "id": "deploy-cart-2.2.1",
+    "kind": "deploy",
+    "service": "cart",
+    "t": "2026-10-22T13:50:38Z",
+    "author": "lin.chen",
+    "summary": "cart 2.2.1: add checkout funnel step metric",
+    "diff": "--- a/internal/checkout/metrics.go\n+++ b/internal/checkout/metrics.go\n@@ -8,3 +8,8 @@\n+var funnelStep = prometheus.NewCounterVec(\n+\tprometheus.CounterOpts{Name: \"checkout_funnel_step_total\"},\n+\t[]string{\"step\"},\n+)\n",
+    "url": "https://deploy.example.internal/cart/releases/2.2.1"
+  },
+  {
+    "id": "flag-frontend-65e4",
+    "kind": "flag",
+    "service": "frontend",
+    "t": "2026-10-22T13:54:21Z",
+    "author": "maria.k",
+    "summary": "frontend: enable new-footer for 25% of sessions",
+    "diff": "new_footer:\n-  rollout: 0\n+  rollout: 25\n",
+    "url": "https://flags.example.internal/audit/flag-frontend-65e4"
+  },
+  {
+    "id": "cfg-search-9eae",
+    "kind": "config",
+    "service": "search",
+    "t": "2026-10-22T14:16:11Z",
+    "author": "sam.r",
+    "summary": "search: raise index refresh interval 60s -\u003e 120s",
+    "diff": "--- a/config/search.yaml\n+++ b/config/search.yaml\n@@ -4 +4 @@\n-index_refresh: 60s\n+index_refresh: 120s\n",
+    "url": "https://git.example.internal/shop/infra/changes/cfg-search-9eae"
+  },
+  {
+    "id": "deploy-frontend-4.10.3",
+    "kind": "deploy",
+    "service": "frontend",
+    "t": "2026-10-22T15:05:53Z",
+    "author": "a.novak",
+    "summary": "frontend 4.10.3: update product card copy and footer links",
+    "diff": "--- a/web/templates/product_card.html\n+++ b/web/templates/product_card.html\n@@ -12,7 +12,7 @@\n-  \u003cspan class=\"cta\"\u003eAdd to basket\u003c/span\u003e\n+  \u003cspan class=\"cta\"\u003eAdd to cart\u003c/span\u003e\n",
+    "url": "https://deploy.example.internal/frontend/releases/4.10.3"
+  },
+  {
+    "id": "commit-c0ffee7",
+    "kind": "commit",
+    "service": "frontend",
+    "t": "2026-10-22T15:10:00Z",
+    "author": "lin.chen",
+    "summary": "Show result count on search page",
+    "diff": "--- a/web/pages/search.tsx\n+++ b/web/pages/search.tsx\n@@ -20,3 +20,4 @@\n+      \u003cp className=\"count\"\u003e{results.total} results\u003c/p\u003e\n",
+    "url": "https://git.example.internal/shop/frontend/commit/c0ffee7"
+  },
+  {
+    "id": "flag-search-semantic-rerank",
+    "kind": "flag",
+    "service": "search",
+    "t": "2026-10-22T15:31:45Z",
+    "author": "a.novak",
+    "summary": "search: enable semantic_rerank for 100% of traffic",
+    "diff": "semantic_rerank:\n-  enabled: false\n-  rollout: 0\n+  enabled: true\n+  rollout: 100\n+  candidates: 500\n",
+    "url": "https://flags.example.internal/audit/flag-search-semantic-rerank"
+  },
+  {
+    "id": "deploy-catalog-1.8.5",
+    "kind": "deploy",
+    "service": "catalog",
+    "t": "2026-10-22T15:35:00Z",
+    "author": "maria.k",
+    "summary": "catalog 1.8.5: add batch endpoint GET /api/products:batch",
+    "diff": "--- a/internal/http/routes.go\n+++ b/internal/http/routes.go\n@@ -18,3 +18,4 @@\n \tmux.HandleFunc(\"GET /api/products/{id}\", h.product)\n+\tmux.HandleFunc(\"GET /api/products:batch\", h.batch)\n",
+    "url": "https://deploy.example.internal/catalog/releases/1.8.5"
+  }
+]

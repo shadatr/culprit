@@ -1,0 +1,52 @@
+[
+  {
+    "id": "flag-gateway-0c44",
+    "kind": "flag",
+    "service": "gateway",
+    "t": "2026-11-09T12:33:44Z",
+    "author": "maria.k",
+    "summary": "gateway: enable http3 for 5% of clients",
+    "diff": "http3:\n-  rollout: 0\n+  rollout: 5\n",
+    "url": "https://flags.example.internal/audit/flag-gateway-0c44"
+  },
+  {
+    "id": "flag-profile-bfdb",
+    "kind": "flag",
+    "service": "profile",
+    "t": "2026-11-09T12:46:44Z",
+    "author": "sam.r",
+    "summary": "profile: enable avatar upload v2 for staff",
+    "diff": "avatar_v2:\n-  audience: none\n+  audience: staff\n",
+    "url": "https://flags.example.internal/audit/flag-profile-bfdb"
+  },
+  {
+    "id": "deploy-orders-3.8.7",
+    "kind": "deploy",
+    "service": "orders",
+    "t": "2026-11-09T13:38:32Z",
+    "author": "sam.r",
+    "summary": "orders 3.8.7: include currency in order summary response",
+    "diff": "--- a/api/order.go\n+++ b/api/order.go\n@@ -20,3 +20,4 @@\n \tTotal int64 `json:\"total\"`\n+\tCurrency string `json:\"currency\"`\n",
+    "url": "https://deploy.example.internal/orders/releases/3.8.7"
+  },
+  {
+    "id": "cfg-notifications-templates",
+    "kind": "config",
+    "service": "notifications",
+    "t": "2026-11-09T13:50:00Z",
+    "author": "e.lund",
+    "summary": "notifications: shipping email subject line A/B test",
+    "diff": "--- a/config/templates.yaml\n+++ b/config/templates.yaml\n@@ -4 +4,2 @@\n-order_shipped_subject: \"Your order is on its way\"\n+order_shipped_subject_a: \"Your order is on its way\"\n+order_shipped_subject_b: \"Good news: it shipped!\"\n",
+    "url": "https://git.example.internal/shop/infra/changes/cfg-notifications-templates"
+  },
+  {
+    "id": "deploy-fulfillment-0.19.4",
+    "kind": "deploy",
+    "service": "fulfillment",
+    "t": "2026-11-09T14:05:00Z",
+    "author": "p.silva",
+    "summary": "fulfillment 0.19.4: retry label printer once on timeout",
+    "diff": "--- a/labels.go\n+++ b/labels.go\n@@ -60,3 +60,6 @@\n+\tif errors.Is(err, context.DeadlineExceeded) {\n+\t\treturn p.print(ctx, l)\n+\t}\n",
+    "url": "https://deploy.example.internal/fulfillment/releases/0.19.4"
+  }
+]

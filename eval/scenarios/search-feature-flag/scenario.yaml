@@ -1,0 +1,18 @@
+name: search-feature-flag
+description: "Enabling the semantic_rerank flag on search makes every query score 500 candidates with an ML model fetched from catalog; search CPU and latency jump and frontend search pages slow down. Red herring: a catalog deploy 5m before the alert while catalog request rate also rises."
+incident:
+  title: "Search latency degraded on frontend"
+  service: frontend
+  started_at: "2026-10-22T15:40:00Z"
+  lookback: 2h
+  after: 30m
+topology:
+  frontend: [catalog, cart, search]
+  catalog: [postgres]
+  cart: [redis]
+  search: [catalog]
+truth:
+  service: search
+  change_id: flag-search-semantic-rerank
+  category: config-change
+  keywords: ["rerank", "semantic", "flag"]

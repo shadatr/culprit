@@ -1,0 +1,22 @@
+name: inventory-index-regression
+description: "inventory 3.2.0 rewrites the stock lookup as WHERE LOWER(sku) = ?, which cannot use the sku index; every reservation does a full table scan, mysql CPU climbs and checkout latency rises through orders to the gateway. Red herring: a gateway deploy 3m before the alert and a payments 3-D Secure flag 20m before."
+incident:
+  title: "Checkout p99 above SLO on gateway"
+  service: gateway
+  started_at: "2026-11-03T11:25:00Z"
+  lookback: 2h
+  after: 30m
+topology:
+  gateway: [auth, orders, profile]
+  auth: [valkey]
+  orders: [inventory, payments, kafka]
+  profile: [mysql]
+  inventory: [mysql]
+  payments: [fx-api]
+  fulfillment: [kafka, inventory, notifications]
+  notifications: [mail-relay]
+truth:
+  service: inventory
+  change_id: deploy-inventory-3.2.0
+  category: bad-deploy
+  keywords: ["index", "full scan", "full table scan", "LOWER(sku)", "rows_examined"]

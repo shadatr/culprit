@@ -1,0 +1,22 @@
+name: orders-retry-storm
+description: "Orders' payments client was reconfigured 50m earlier to retry 6 times with no backoff. A brief payments blip during a rolling deploy triggers a retry storm: payments traffic multiplies, payments saturates and keeps failing, and gateway latency and 503s rise. The symptomatic service is the gateway and the visible failure is payments, but the cause is the orders retry policy. Red herring: the payments deploy 7m before the alert that triggered the blip."
+incident:
+  title: "Gateway latency and 503s"
+  service: gateway
+  started_at: "2026-11-10T20:30:00Z"
+  lookback: 2h
+  after: 30m
+topology:
+  gateway: [auth, orders, profile]
+  auth: [valkey]
+  orders: [inventory, payments, kafka]
+  profile: [mysql]
+  inventory: [mysql]
+  payments: [fx-api]
+  fulfillment: [kafka, inventory, notifications]
+  notifications: [mail-relay]
+truth:
+  service: orders
+  change_id: cfg-orders-payments-retries
+  category: config-change
+  keywords: ["retry", "retries", "backoff", "amplif"]

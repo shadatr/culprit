@@ -1,0 +1,72 @@
+[
+  {
+    "id": "deploy-catalog-1.7.1",
+    "kind": "deploy",
+    "service": "catalog",
+    "t": "2026-10-20T12:45:52Z",
+    "author": "j.okafor",
+    "summary": "catalog 1.7.1: add request id to access logs",
+    "diff": "--- a/internal/http/middleware.go\n+++ b/internal/http/middleware.go\n@@ -40,6 +40,7 @@ func accessLog(next http.Handler) http.Handler {\n \t\tslog.Info(\"request\",\n+\t\t\t\"req\", RequestID(r.Context()),\n \t\t\t\"path\", r.URL.Path,\n",
+    "url": "https://deploy.example.internal/catalog/releases/1.7.1"
+  },
+  {
+    "id": "cfg-cart-b347",
+    "kind": "config",
+    "service": "cart",
+    "t": "2026-10-20T12:47:55Z",
+    "author": "lin.chen",
+    "summary": "cart: raise log sampling 1% -\u003e 5%",
+    "diff": "--- a/config/cart.yaml\n+++ b/config/cart.yaml\n@@ -2 +2 @@\n-log_sample: 0.01\n+log_sample: 0.05\n",
+    "url": "https://git.example.internal/shop/infra/changes/cfg-cart-b347"
+  },
+  {
+    "id": "commit-8997c75",
+    "kind": "commit",
+    "service": "search",
+    "t": "2026-10-20T12:50:31Z",
+    "author": "sam.r",
+    "summary": "Document ranking parameters in README",
+    "diff": "--- a/README.md\n+++ b/README.md\n@@ -40,3 +40,9 @@\n+## Ranking\n+BM25 with k1=1.2, b=0.75.\n",
+    "url": "https://git.example.internal/shop/search/commit/8997c75"
+  },
+  {
+    "id": "deploy-search-3.1.6",
+    "kind": "deploy",
+    "service": "search",
+    "t": "2026-10-20T13:31:59Z",
+    "author": "sam.r",
+    "summary": "search 3.1.6: update synonyms list for outdoor category",
+    "diff": "--- a/data/synonyms.txt\n+++ b/data/synonyms.txt\n@@ -88,3 +88,5 @@\n+waterproof, rainproof\n+beanie, wool hat\n",
+    "url": "https://deploy.example.internal/search/releases/3.1.6"
+  },
+  {
+    "id": "deploy-cart-2.3.1",
+    "kind": "deploy",
+    "service": "cart",
+    "t": "2026-10-20T13:43:00Z",
+    "author": "j.okafor",
+    "summary": "cart 2.3.1: upgrade redis client to go-redis v9.6",
+    "diff": "--- a/go.mod\n+++ b/go.mod\n@@ -7,7 +7,7 @@\n-\tgithub.com/redis/go-redis/v9 v9.5.1\n+\tgithub.com/redis/go-redis/v9 v9.6.0\n",
+    "url": "https://deploy.example.internal/cart/releases/2.3.1"
+  },
+  {
+    "id": "deploy-catalog-1.8.2",
+    "kind": "deploy",
+    "service": "catalog",
+    "t": "2026-10-20T13:58:00Z",
+    "author": "maria.k",
+    "summary": "catalog 1.8.2: show image gallery on product list pages",
+    "diff": "--- a/internal/store/products.go\n+++ b/internal/store/products.go\n@@ -61,6 +61,13 @@ func (s *Store) ListByCategory(ctx context.Context, cat string) ([]Product, error) {\n \tproducts, err := s.queryProducts(ctx, cat)\n \tif err != nil {\n \t\treturn nil, err\n \t}\n+\tfor i := range products {\n+\t\timgs, err := s.images.ForProduct(ctx, products[i].ID) // SELECT ... FROM product_images WHERE product_id = $1\n+\t\tif err != nil {\n+\t\t\treturn nil, err\n+\t\t}\n+\t\tproducts[i].Gallery = imgs\n+\t}\n \treturn products, nil\n",
+    "url": "https://deploy.example.internal/catalog/releases/1.8.2"
+  },
+  {
+    "id": "flag-frontend-autumn-banner",
+    "kind": "flag",
+    "service": "frontend",
+    "t": "2026-10-20T14:03:00Z",
+    "author": "lin.chen",
+    "summary": "frontend: enable autumn-sale homepage banner for 50% of sessions",
+    "diff": "autumn_banner:\n-  rollout: 0\n+  rollout: 50\n",
+    "url": "https://flags.example.internal/audit/flag-frontend-autumn-banner"
+  }
+]
